@@ -1,128 +1,186 @@
-  
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ImageBackground,
+  Alert
+} from "react-native";
 import * as firebase from "firebase";
 
-export default class RegisterScreen extends React.Component {
-    state = {
-        name: "",
-        email: "",
-        password: "",
-        errorMessage: null
+export default class LoginScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      nombre: "",
+      apellidos: "",
+      cedula: "",
+      contraseña: "",
     };
+  }
 
-    handleSignUp = () => {
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then(userCredentials => {
-                return userCredentials.user.updateProfile({
-                    displayName: this.state.name
-                });
-            })
-            .catch(error => this.setState({ errorMessage: error.message }));
-    };
+  _insert() {
+    firebase
+      .database()
+      .ref("Lotto/Usuarios/" + this.state.nombre)
+      .set({
+        Nombre: this.state.nombre,
+        Apellidos: this.state.apellidos,
+        Cédula: this.state.cedula,
+        Contraseña: this.state.contraseña
+      });
+  }
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.greeting}>{`Hello!\nSign up to get started.`}</Text>
+  _comprobarUsuario() {
+    setTimeout(() => {
+      firebase
+        .database()
+        .ref("/Lotto/Usuarios/")
+        .orderByChild("Cédula")
+        .equalTo(this.state.cedula)
+        .on("value", snapshot => {
+          this._insert();
+          Alert.alert("Te has registrado satisfactoriamente. Por favor, dirigirse a la sección de Log in.");
+        });
+    }, 5000)
+  }
 
-                <View style={styles.errorMessage}>
-                    {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
-                </View>
+  render() {
+    return (
+      <View style={styles.container}>
+        <ImageBackground
+          style={styles.background}
+          source={require("../../../assets/BG3.png")}
+        >
+          <Text style={styles.bienvenida}>{'Sing up'}</Text>
 
-                <View style={styles.form}>
-                    <View>
-                        <Text style={styles.inputTitle}>Full Name</Text>
-                        <TextInput
-                            style={styles.input}
-                            autoCapitalize="none"
-                            onChangeText={name => this.setState({ name })}
-                            value={this.state.name}
-                        ></TextInput>
-                    </View>
-
-                    <View style={{ marginTop: 32 }}>
-                        <Text style={styles.inputTitle}>Email Address</Text>
-                        <TextInput
-                            style={styles.input}
-                            autoCapitalize="none"
-                            onChangeText={email => this.setState({ email })}
-                            value={this.state.email}
-                        ></TextInput>
-                    </View>
-
-                    <View style={{ marginTop: 32 }}>
-                        <Text style={styles.inputTitle}>Password</Text>
-                        <TextInput
-                            style={styles.input}
-                            secureTextEntry
-                            autoCapitalize="none"
-                            onChangeText={password => this.setState({ password })}
-                            value={this.state.password}
-                        ></TextInput>
-                    </View>
-                </View>
-
-                <TouchableOpacity style={styles.button} onPress={this.handleSignUp}>
-                    <Text style={{ color: "#FFF", fontWeight: "500" }}>Sign up</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}>
-                    <Text style={{ color: "#414959", fontSize: 13 }}>
-                        New to SocialApp? <Text style={{ fontWeight: "500", color: "#E9446A" }}>Login</Text>
-                    </Text>
-                </TouchableOpacity>
+          <View style={styles.form}>
+            <View style={{ marginTop: 140 }}>
+              <Text style={styles.inputTitle}>Nombre</Text>
+              <TextInput
+                style={styles.input}
+                autoCapitalize="none"
+                onChangeText={nombre => this.setState({ nombre })}
+                value={this.state.nombre}
+              ></TextInput>
             </View>
-        );
-    }
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.inputTitle}>Apellidos</Text>
+              <TextInput
+                style={styles.input}
+                autoCapitalize="none"
+                onChangeText={apellidos => this.setState({ apellidos })}
+                value={this.state.apellidos}
+              ></TextInput>
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.inputTitle}>Cedula</Text>
+              <TextInput
+                style={styles.input}
+                autoCapitalize="none"
+                onChangeText={cedula => this.setState({ cedula })}
+                value={this.state.cedula}
+              ></TextInput>
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.inputTitle}>Contraseña</Text>
+              <TextInput
+                style={styles.input}
+                secureTextEntry
+                autoCapitalize="none"
+                onChangeText={contraseña => this.setState({ contraseña })}
+                value={this.state.contraseña}
+              ></TextInput>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              this._comprobarUsuario();
+            }}
+          >
+            <Text style={styles.text}>Sing up</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{ alignSelf: "center", marginTop: 150 }}
+            onPress={() => this.props.navigation.navigate("Login")}
+          >
+            <Text style={styles.textLogin}>
+                !Si estás registrado¡
+              <Text style={styles.textAlertLogin}> Log in</Text>
+            </Text>
+          </TouchableOpacity>
+        </ImageBackground>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    greeting: {
-        marginTop: 32,
-        fontSize: 18,
-        fontWeight: "400",
-        textAlign: "center"
-    },
-    errorMessage: {
-        height: 72,
-        alignItems: "center",
-        justifyContent: "center",
-        marginHorizontal: 30
-    },
-    error: {
-        color: "#E9446A",
-        fontSize: 13,
-        fontWeight: "600",
-        textAlign: "center"
-    },
-    form: {
-        marginBottom: 48,
-        marginHorizontal: 30
-    },
-    inputTitle: {
-        color: "#8A8F9E",
-        fontSize: 10,
-        textTransform: "uppercase"
-    },
-    input: {
-        borderBottomColor: "#8A8F9E",
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        height: 40,
-        fontSize: 15,
-        color: "#161F3D"
-    },
-    button: {
-        marginHorizontal: 30,
-        backgroundColor: "#E9446A",
-        borderRadius: 4,
-        height: 52,
-        alignItems: "center",
-        justifyContent: "center"
-    }
+  container: {
+    flex: 1
+  },
+  bienvenida: {
+    position: "absolute",
+    right: 20,
+    top: 10,
+    color: "black",
+    marginTop: 32,
+    fontSize: 75,
+    fontWeight: "400"
+  },
+  form: {
+    marginBottom: 48,
+    marginHorizontal: 30
+  },
+  inputTitle: {
+    fontWeight: "bold",
+    color: "red",
+    fontSize: 20,
+    textTransform: "uppercase"
+  },
+  input: {
+    backgroundColor: "white",
+    borderBottomColor: "#8A8F9E",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    height: 40,
+    fontSize: 15,
+    color: "#161F3D"
+  },
+  text: {
+    color: "#fff",
+    fontSize: 20
+  },
+  button: {
+    position: 'absolute',
+    bottom: 200,
+    left: 30,
+    width: 300,
+    marginHorizontal: 30,
+    backgroundColor: "red",
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  textLogin: {
+    color: "black",
+    fontSize: 13
+  },
+  textAlertLogin: {
+    fontWeight: "500",
+    color: "red"
+  },
+  background: {
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "space-around",
+    height: "100%"
+  }
 });

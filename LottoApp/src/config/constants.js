@@ -1,23 +1,11 @@
-/*
 export default {
 	FirebaseConfig: {
-		apiKey: "",
-    authDomain: "",
-    databaseURL: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: ""
-	}
-}
-*/
-export default {
-	FirebaseConfig: {
-        apiKey: "AIzaSyD-L814fSPIQPDErmWtbozis5TNH5knG1U",
-        authDomain: "socialapp-1a569.firebaseapp.com",
-        databaseURL: "https://socialapp-1a569.firebaseio.com",
-        projectId: "socialapp-1a569",
-        storageBucket: "socialapp-1a569.appspot.com",
-        messagingSenderId: "319111455806",
-        appId: "1:319111455806:web:130fab55c22ed53afc5d6f"
+                apiKey: "AIzaSyCA4ubRIq9f3seotxY4xp8QA-wyzZL8ED4",
+                authDomain: "lotto-fca24.firebaseapp.com",
+                databaseURL: "https://lotto-fca24.firebaseio.com",
+                projectId: "lotto-fca24",
+                storageBucket: "lotto-fca24.appspot.com",
+                messagingSenderId: "167051723140",
+                appId: "1:167051723140:web:72476ce520be1846a59dd1"
 	}
 }
